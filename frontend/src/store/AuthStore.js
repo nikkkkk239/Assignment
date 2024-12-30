@@ -1,12 +1,17 @@
 import {create} from "zustand";
-import { axiosInstance } from "../lib/AxiosInstance";
-import toast from "react-hot-toast";
+import toast from "react-hot-toast"
 import {persist} from "zustand/middleware"
+import { axiosInstance } from "../lib/AxiosInstance";
+
 export const useAuthStore = create(
     persist((set,get)=>({
     isCheckingAuth : true,
     isSigningUp : false,
     isLoggingIn:false,
+    currentLocation:null,
+    setCurrentLocation:(val)=>{
+        set({currentLocation:val})
+    },
     authUser : null,
     isPermissionGiven : false,
     setPermissionGiven:(val)=>{
@@ -18,13 +23,11 @@ export const useAuthStore = create(
             set({authUser : response.data})
         } catch (error) {
             set({authUser:null})
-
         }
         finally{
             set({isCheckingAuth : false});
         }
-    },
-    signup:async(details)=>{
+    },signup:async(details)=>{
         try {
             set({isSigningUp:true})
             const response = await axiosInstance.post("/auth/signup",details);

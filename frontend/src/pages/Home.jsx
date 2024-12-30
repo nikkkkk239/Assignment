@@ -1,29 +1,22 @@
-import React, { useState, useEffect, useContext } from "react";
-import Modal from "react-modal";
-import { modalContext } from "../store/ModalContext";
+import React, { useState,useEffect } from 'react'
 import { RiUserLocationFill } from "react-icons/ri";
-import { RiCrosshair2Fill } from "react-icons/ri";
-import { libraries } from "../constant";
-import { GoogleMap, MarkerF, useLoadScript,useJsApiLoader, Autocomplete } from "@react-google-maps/api";
-import { useAuthStore } from "../store/AuthStore";
-import toast from "react-hot-toast";
-import { useLocationStore } from "../store/LocationStore";
-
-const Home = () => {
-  const { isModalOpen, setIsModalOpen } = useContext(modalContext);
+import Modal from "react-modal"
+import { useLoadScript, Autocomplete } from "@react-google-maps/api";
+import { useAuthStore } from '../store/AuthStore';
+import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import { libraries } from '../lib/constants';
+function Home() {
+  const navigate = useNavigate()
+  const [isModalOpen,setIsModalOpen] = useState(true)
+  const {setPermissionGiven,isPermissionGiven,currentLocation,setCurrentLocation} = useAuthStore();
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [autocomplete, setAutocomplete] = useState(null);
-  const { isPermissionGiven, setPermissionGiven } = useAuthStore();
-  const [address, setAddress] = useState("");
-  const { currentLocation, setLocation, getLocation, setCurrentLocation } = useLocationStore();
-
-  // Google Maps configuration
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: "AIzaSyDyvTvU89e-PTuzB24DpgbEks_AEjlH5Os",
     libraries,
   });
 
-  // Check location permission
   const checkLocationPermission = async () => {
     if ("geolocation" in navigator && "permissions" in navigator) {
       const permissionStatus = await navigator.permissions.query({
@@ -43,76 +36,9 @@ const Home = () => {
       };
     }
   };
-
-  const geocodeLatLng = (lat, lng) => {
-    // Check if google is defined
-    if (window.google) {
-      const geocoder = new window.google.maps.Geocoder();
-      const latLng = { lat: parseFloat(lat), lng: parseFloat(lng) };
-
-      geocoder.geocode({ location: latLng }, (results, status) => {
-        if (status === "OK" && results[0]) {
-          setAddress(results[0].formatted_address); // Use the first result's address
-        } else {
-          setAddress("Address not found");
-        }
-      });
-    } else {
-      console.error("Google Maps API is not loaded.");
-    }
-  };
-
-  // Request user's location and store it
-  const enableLocation = async () => {
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          const location = { latitude, longitude };
-
-          // Save location in localStorage for persistence
-          localStorage.setItem("currentLocation", JSON.stringify(location));
-
-          setLocation({ location });
-          toast.success("Location enabled.");
-          setIsModalOpen(false);
-        },
-        (error) => {
-          console.error("Error retrieving location:", error);
-          toast.error("Failed to get location. Please enable location services.");
-        }
-      );
-      setPermissionGiven(true);
-    } else {
-      toast.error("Geolocation is not supported by your browser.");
-    }
-  };
-  
-  const enableLocation2 = async () => {
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          const location = { latitude, longitude };
-
-          // Save location in localStorage for persistence
-          localStorage.setItem("currentLocation", JSON.stringify(location));
-
-          setLocation({ location });
-          setIsModalOpen(false);
-        },
-        (error) => {
-          console.error("Error retrieving location:", error);
-          toast.error("Failed to get location. Please enable location services.");
-        }
-      );
-      setPermissionGiven(true);
-    } else {
-      toast.error("Geolocation is not supported by your browser.");
-    }
-  };
-
-  // Handle autocomplete address selection
+  useEffect(() => {
+    !isPermissionGiven && checkLocationPermission();
+  }, []);
   const handlePlaceSelected = () => {
     if (autocomplete !== null) {
       const place = autocomplete.getPlace();
@@ -123,73 +49,38 @@ const Home = () => {
         const lng = place.geometry.location.lng();
         const location = { latitude: lat, longitude: lng };
         localStorage.setItem("currentLocation", JSON.stringify(location));
-        setPermissionGiven(true);
-        setLocation({ location });
+        setCurrentLocation(location)
+        navigate('/selectAddress')
       }
     }
   };
+  const enableLocation = async () => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          const location = { latitude, longitude };
 
-  const handleMapClick = (event) => {
-    const lat = event.latLng.lat();
-    const lng = event.latLng.lng();
-
-    // Update marker position
-    setCurrentLocation({ lati: lat, long: lng });
-
-    // Geocode the clicked location to get the address
-    geocodeLatLng(lat, lng);
-
-    // Update location in localStorage
-    const location = { latitude: lat, longitude: lng };
-    localStorage.setItem("currentLocation", JSON.stringify(location));
-    setLocation({ location });
-    geocodeLatLng(currentLocation.lati, currentLocation.long);
-  };
-  const handleChangeClicked = ()=>{
-    toast.success("Address Changed.")
-  }
-
-  useEffect(() => {
-    !isPermissionGiven && checkLocationPermission();
-
-    // Retrieve persisted location from localStorage if available
-    const savedLocation = localStorage.getItem("currentLocation");
-    if (savedLocation) {
-      setCurrentLocation(JSON.parse(savedLocation)); // Parse and set persisted location
-    }
-
-    getLocation();
-  }, []);
-
-  useEffect(() => {
-    console.log(currentLocation);
-  }, [currentLocation]);
-
-  useEffect(() => {
-    if (isPermissionGiven && currentLocation) {
-      setIsModalOpen(false);
-      if (currentLocation.lati && currentLocation.long) {
-        geocodeLatLng(currentLocation.lati, currentLocation.long);
-      }
+          // Save location in localStorage for persistence
+          localStorage.setItem("currentLocation", JSON.stringify(location));
+          setCurrentLocation(location)
+          toast.success("Location enabled.");
+          setIsModalOpen(false);
+        },
+        (error) => {
+          console.error("Error retrieving location:", error);
+          toast.error("Failed to get location. Please enable location services.");
+        }
+      );
+      setPermissionGiven(true);
+      navigate("/selectAddress");
     } else {
-      setIsModalOpen(true);
+      toast.error("Geolocation is not supported by your browser.");
     }
-  }, [isPermissionGiven, currentLocation]);
-
-  if (!isLoaded) {
-    return <p>Loading......</p>;
-  }
-
-  if (loadError) {
-    return <p>Error loading Google Maps API: {loadError.message}</p>;
-  }
-
-  // Ensure currentLocation has valid lat and lng properties
-  const lat = currentLocation?.lati;
-  const lng = currentLocation?.long;
+  };
 
   return (
-    <>
+    <div>
       <Modal
         ariaHideApp={false}
         isOpen={isModalOpen}
@@ -206,13 +97,14 @@ const Home = () => {
           },
         }}
       >
+        <RiUserLocationFill style={{fontSize:"30px",marginBottom:"5px",color:"#4facfe"}}/>
         <h2>Location Permission Required</h2>
         <p>Please enable your location to proceed or search manually for your address.</p>
 
         <div style={{ marginTop: "20px" }}>
-          <button onClick={enableLocation} className="btn" style={buttonStyle}>
+          {!isPermissionGiven && <button onClick={enableLocation} className="btn" style={buttonStyle}>
             Enable Location
-          </button>
+          </button>}
 
           <div style={{ marginTop: "10px" }}>
             {isLoaded && (
@@ -227,68 +119,14 @@ const Home = () => {
                 />
               </Autocomplete>
             )}
-            <button
-              onClick={() => {
-                setIsModalOpen(false);
-              }}
-              style={{ marginTop: "20px", ...buttonStyle }}
-            >
-              Search Manually
-            </button>
           </div>
         </div>
       </Modal>
+    </div>
 
-      {isPermissionGiven && isLoaded && lat && lng && (
-        <div className="yeah">
-          <h1
-            style={{
-              backgroundColor: "white",
-              fontSize: "16px",
-              textAlign: "center",
-              padding: "10px",
-              color: "#4facfe",
-              borderBottom: "2px solid black",
-            }}
-          >
-            Location Information
-          </h1>
-          <GoogleMap
-            mapContainerStyle={{ width: "100%", height: "75vh" }}
-            center={{ lat, lng }}
-            zoom={15}
-            onClick={handleMapClick} // Handle map click to update location
-          >
-            <MarkerF position={{ lat, lng }} />
-          </GoogleMap>
-          <div className="bottom">
-            <div className="left">
-              <p>Select Your Delivery address</p>
-              <div className="add">
-                <p className="address">
-                  {" "}
-                  <RiUserLocationFill style={{ fontSize: "20px" }} /> {address}
-                </p>
-              </div>
-            </div>
+  )
+}
 
-            <div className="right">
-              <button onClick={enableLocation}>Enable</button>
-              <button onClick={handleChangeClicked}>Change</button>
-            </div>
-
-            <button className="locateMe" onClick={enableLocation2}>
-              {" "}
-              <RiCrosshair2Fill /> Locate me
-            </button>
-          </div>
-        </div>
-      )}
-    </>
-  );
-};
-
-// Custom styles for buttons and inputs
 const buttonStyle = {
   padding: "10px 20px",
   backgroundColor: "#4facfe",
@@ -306,4 +144,4 @@ const inputStyle = {
   borderRadius: "5px",
 };
 
-export default Home;
+export default Home

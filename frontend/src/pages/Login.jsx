@@ -3,7 +3,7 @@ import toast from "react-hot-toast";
 import { useAuthStore } from "../store/AuthStore";
 
 
-const Signup = () => {
+const Login = () => {
   const {isLoggingIn , login,authUser} = useAuthStore();
   const [formData, setFormData] = useState({
     email: "",
@@ -80,4 +80,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default Login;
