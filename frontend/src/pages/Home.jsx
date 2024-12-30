@@ -3,7 +3,8 @@ import Modal from "react-modal";
 import { modalContext } from "../store/ModalContext";
 import { RiUserLocationFill } from "react-icons/ri";
 import { RiCrosshair2Fill } from "react-icons/ri";
-import { GoogleMap, MarkerF, useLoadScript, Autocomplete } from "@react-google-maps/api";
+import { libraries } from "../constant";
+import { GoogleMap, MarkerF, useLoadScript,useJsApiLoader, Autocomplete } from "@react-google-maps/api";
 import { useAuthStore } from "../store/AuthStore";
 import toast from "react-hot-toast";
 import { useLocationStore } from "../store/LocationStore";
@@ -13,13 +14,13 @@ const Home = () => {
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [autocomplete, setAutocomplete] = useState(null);
   const { isPermissionGiven, setPermissionGiven } = useAuthStore();
-  const [address,setAddress] = useState("")
+  const [address, setAddress] = useState("");
   const { currentLocation, setLocation, getLocation, setCurrentLocation } = useLocationStore();
 
   // Google Maps configuration
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: "AIzaSyDyvTvU89e-PTuzB24DpgbEks_AEjlH5Os",
-    libraries: ["places"],
+    libraries,
   });
 
   // Check location permission
@@ -44,16 +45,21 @@ const Home = () => {
   };
 
   const geocodeLatLng = (lat, lng) => {
-    const geocoder = new google.maps.Geocoder();
-    const latLng = { lat: parseFloat(lat), lng: parseFloat(lng) };
+    // Check if google is defined
+    if (window.google) {
+      const geocoder = new window.google.maps.Geocoder();
+      const latLng = { lat: parseFloat(lat), lng: parseFloat(lng) };
 
-    geocoder.geocode({ location: latLng }, (results, status) => {
-      if (status === "OK" && results[0]) {
-        setAddress(results[0].formatted_address); // Use the first result's address
-      } else {
-        setAddress("Address not found");
-      }
-    });
+      geocoder.geocode({ location: latLng }, (results, status) => {
+        if (status === "OK" && results[0]) {
+          setAddress(results[0].formatted_address); // Use the first result's address
+        } else {
+          setAddress("Address not found");
+        }
+      });
+    } else {
+      console.error("Google Maps API is not loaded.");
+    }
   };
 
   // Request user's location and store it
@@ -63,12 +69,36 @@ const Home = () => {
         (position) => {
           const { latitude, longitude } = position.coords;
           const location = { latitude, longitude };
-          
+
           // Save location in localStorage for persistence
           localStorage.setItem("currentLocation", JSON.stringify(location));
 
           setLocation({ location });
           toast.success("Location enabled.");
+          setIsModalOpen(false);
+        },
+        (error) => {
+          console.error("Error retrieving location:", error);
+          toast.error("Failed to get location. Please enable location services.");
+        }
+      );
+      setPermissionGiven(true);
+    } else {
+      toast.error("Geolocation is not supported by your browser.");
+    }
+  };
+  
+  const enableLocation2 = async () => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          const location = { latitude, longitude };
+
+          // Save location in localStorage for persistence
+          localStorage.setItem("currentLocation", JSON.stringify(location));
+
+          setLocation({ location });
           setIsModalOpen(false);
         },
         (error) => {
@@ -91,17 +121,37 @@ const Home = () => {
       if (place.geometry && place.geometry.location) {
         const lat = place.geometry.location.lat();
         const lng = place.geometry.location.lng();
-        const location = {latitude : lat , longitude:lng}
+        const location = { latitude: lat, longitude: lng };
         localStorage.setItem("currentLocation", JSON.stringify(location));
-        setPermissionGiven(true)
-        setLocation({location});
+        setPermissionGiven(true);
+        setLocation({ location });
       }
     }
   };
 
+  const handleMapClick = (event) => {
+    const lat = event.latLng.lat();
+    const lng = event.latLng.lng();
+
+    // Update marker position
+    setCurrentLocation({ lati: lat, long: lng });
+
+    // Geocode the clicked location to get the address
+    geocodeLatLng(lat, lng);
+
+    // Update location in localStorage
+    const location = { latitude: lat, longitude: lng };
+    localStorage.setItem("currentLocation", JSON.stringify(location));
+    setLocation({ location });
+    geocodeLatLng(currentLocation.lati, currentLocation.long);
+  };
+  const handleChangeClicked = ()=>{
+    toast.success("Address Changed.")
+  }
+
   useEffect(() => {
     !isPermissionGiven && checkLocationPermission();
-    
+
     // Retrieve persisted location from localStorage if available
     const savedLocation = localStorage.getItem("currentLocation");
     if (savedLocation) {
@@ -116,13 +166,19 @@ const Home = () => {
   }, [currentLocation]);
 
   useEffect(() => {
-    if (isPermissionGiven) {
+    if (isPermissionGiven && currentLocation) {
       setIsModalOpen(false);
-      geocodeLatLng(currentLocation.lati,currentLocation.long)
+      if (currentLocation.lati && currentLocation.long) {
+        geocodeLatLng(currentLocation.lati, currentLocation.long);
+      }
     } else {
       setIsModalOpen(true);
     }
-  }, [isPermissionGiven]);
+  }, [isPermissionGiven, currentLocation]);
+
+  if (!isLoaded) {
+    return <p>Loading......</p>;
+  }
 
   if (loadError) {
     return <p>Error loading Google Maps API: {loadError.message}</p>;
@@ -185,32 +241,47 @@ const Home = () => {
 
       {isPermissionGiven && isLoaded && lat && lng && (
         <div className="yeah">
-          <h1 style={{backgroundColor:"white",fontSize:"16px",textAlign:"center",padding:"10px",color:"#4facfe",borderBottom:"2px solid black"}}>Location Information</h1>
-        <GoogleMap
-          mapContainerStyle={{ width: "100%", height: "75vh" }}
-          center={{ lat, lng }}
-          zoom={15}
-        >
-          <MarkerF position={{ lat, lng }} />
-        </GoogleMap>
-        <div className="bottom">
-          <div className="left">
-            <p >Select Your Delivery address</p>
-            <div className="add">
-              <p className="address" > <RiUserLocationFill style={{fontSize:'20px'}}/> {address}</p>
+          <h1
+            style={{
+              backgroundColor: "white",
+              fontSize: "16px",
+              textAlign: "center",
+              padding: "10px",
+              color: "#4facfe",
+              borderBottom: "2px solid black",
+            }}
+          >
+            Location Information
+          </h1>
+          <GoogleMap
+            mapContainerStyle={{ width: "100%", height: "75vh" }}
+            center={{ lat, lng }}
+            zoom={15}
+            onClick={handleMapClick} // Handle map click to update location
+          >
+            <MarkerF position={{ lat, lng }} />
+          </GoogleMap>
+          <div className="bottom">
+            <div className="left">
+              <p>Select Your Delivery address</p>
+              <div className="add">
+                <p className="address">
+                  {" "}
+                  <RiUserLocationFill style={{ fontSize: "20px" }} /> {address}
+                </p>
+              </div>
             </div>
+
+            <div className="right">
+              <button onClick={enableLocation}>Enable</button>
+              <button onClick={handleChangeClicked}>Change</button>
+            </div>
+
+            <button className="locateMe" onClick={enableLocation2}>
+              {" "}
+              <RiCrosshair2Fill /> Locate me
+            </button>
           </div>
-
-          <div className="right">
-            <button onClick={enableLocation}>Enable</button>
-            <button>Change</button>
-          </div>
-
-
-            <button className="locateMe"> <RiCrosshair2Fill/> Locate me</button>
-
-
-        </div>
         </div>
       )}
     </>
