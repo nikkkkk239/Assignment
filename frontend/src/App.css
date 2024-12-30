@@ -1,42 +1,138 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "montserrat";
 }
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+/* Container */
+.signup-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    font-family: Arial, sans-serif;
   }
-  to {
-    transform: rotate(360deg);
+  
+  /* Form */
+  .signup-form {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
   }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+  
+  /* Form Heading */
+  .signup-form h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #333;
   }
-}
+  
+  /* Form Group */
+  .form-group {
+    margin-bottom: 1rem;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+    color: #555;
+  }
+  
+  .form-group input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+  }
+  
+  /* Button */
+  .signup-button {
+    width: 100%;
+    padding: 0.75rem;
+    background: #4facfe;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  
+  .signup-button:hover {
+    background: #00c2ff;
+  }
+  
+  /* Responsive */
+  @media (max-width: 600px) {
+    .signup-form {
+      padding: 1.5rem;
+    }
+  
+    .signup-form h2 {
+      font-size: 1.5rem;
+    }
+  
+    .form-group input {
+      padding: 0.65rem;
+    }
+  
+    .signup-button {
+      padding: 0.65rem;
+      font-size: 0.9rem;
+    }
+  }
+  .bottom{
+    display: flex;
+    justify-content: space-between;
+    padding: 25px;
+    background-color: #00c2ff;
+    height: fit-content;
+    min-height: calc(100vh - 42px - 611.25px);
+    border-radius: 15px 15px 0px 0px;
+    position: relative;
+  }
+  .bottom .left{
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+  .bottom .left p{
+    font-size: 15px;
 
-.card {
-  padding: 2em;
-}
+  }
+  .bottom .left .add{
+    display: flex;
+    flex-direction: column;
 
-.read-the-docs {
-  color: #888;
-}
+  }
+  .bottom .left .add .address{
+    font-size: 30px;
+    font-weight: 500;
+    
+  }
+  .bottom .right{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 15px 0; 
+  }
+  .bottom .right button{
+    color: #00c2ff;
+    font-weight: 500;
+    padding: 5px;
+    border: 2px solid black;
+    border-radius: 5px;
+    cursor: pointer;
+
+  }
+  .locateMe{
+    position: absolute;
+    
+  }
