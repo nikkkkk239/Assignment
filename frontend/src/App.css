@@ -170,3 +170,10 @@
   cursor: pointer;
 
 }
+@media (max-width:407px) {
+  .complete .cross{
+    width:20px;
+    height: 20px;
+    top: 8px;
+  }
+}

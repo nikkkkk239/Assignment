@@ -8,6 +8,10 @@ export const useAuthStore = create(
     isCheckingAuth : true,
     isSigningUp : false,
     isLoggingIn:false,
+    addressSelected : null,
+    setAddressSelected:(val)=>{
+        set({addressSelected : val})
+    },
     currentLocation:null,
     setCurrentLocation:(val)=>{
         set({currentLocation:val})

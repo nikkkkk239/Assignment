@@ -2,7 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import authRouter from "./routes/auth.route.js"
-
+import addressRouter from "./routes/address.route.js"
 import { connectDb } from "./lib/connectDb.js";
 import cookieParser from "cookie-parser";
 
@@ -17,6 +17,7 @@ app.use(express.json());
 app.use(cookieParser())
 
 app.use("/api/auth",authRouter);
+app.use("/api/address",addressRouter);
 
 
 app.listen(PORT,()=>{

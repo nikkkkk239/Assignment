@@ -9,7 +9,7 @@ import { libraries } from '../lib/constants';
 function Home() {
   const navigate = useNavigate()
   const [isModalOpen,setIsModalOpen] = useState(true)
-  const {setPermissionGiven,isPermissionGiven,currentLocation,setCurrentLocation} = useAuthStore();
+  const {setPermissionGiven,isPermissionGiven,currentLocation,addressSelected,setCurrentLocation} = useAuthStore();
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [autocomplete, setAutocomplete] = useState(null);
   const { isLoaded, loadError } = useLoadScript({
@@ -81,7 +81,7 @@ function Home() {
 
   return (
     <div>
-      <Modal
+      {!addressSelected ? <Modal
         ariaHideApp={false}
         isOpen={isModalOpen}
         onRequestClose={() => setIsModalOpen(false)}
@@ -121,7 +121,9 @@ function Home() {
             )}
           </div>
         </div>
-      </Modal>
+      </Modal> :
+        <Modal>Form details</Modal>
+      }
     </div>
 
   )

@@ -10,7 +10,7 @@ function SelectAddress() {
   const [loc, setLoc] = useState(
     JSON.parse(localStorage.getItem("currentLocation")) || { latitude: 0, longitude: 0 }
   );
-  const {setPermissionGiven,isPermissionGiven,currentLocation,setCurrentLocation} = useAuthStore();
+  const {setPermissionGiven,isPermissionGiven,setAdressSelected,currentLocation,setCurrentLocation} = useAuthStore();
   const [address, setAddress] = useState(localStorage.getItem("currentAddress") || "");
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: "AIzaSyDyvTvU89e-PTuzB24DpgbEks_AEjlH5Os",
@@ -84,9 +84,9 @@ function SelectAddress() {
   return (
     <div className="complete">
 
-      <button className="cross">
+      {/* <button className="cross">
         <RxCross2 />
-      </button>
+      </button> */}
 
       <h1>
         Location Information
