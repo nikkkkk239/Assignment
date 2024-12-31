@@ -4,11 +4,6 @@ A brief description of the project, its functionality, and purpose.
 
 ## How to Run the Code
 
-### Prerequisites
-- Node.js (Specify required version)
-- MongoDB (if used)
-- Google API key for Google Maps integration
-
 ### Steps
 1. Download the zip file.
 2. Extract the zip file to any directory.
