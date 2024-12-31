@@ -1,8 +1,10 @@
 import React from 'react'
+import { useAddressStore } from '../store/AddressStore'
 
 function YourLocation() {
+  const {address} = useAddressStore()
   return (
-    <div>YourLocation</div>
+    <div>{address.home}</div>
   )
 }
 

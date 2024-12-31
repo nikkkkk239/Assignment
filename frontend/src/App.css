@@ -9,10 +9,15 @@
 .signup-container {
     display: flex;
     justify-content: center;
+    flex-direction: column;
+    gap: 20px;
     align-items: center;
     height: 100vh;
     background: linear-gradient(135deg, #4facfe, #00f2fe);
     font-family: Arial, sans-serif;
+  }
+  .signup-container .written{
+    font-size: 17px;
   }
   
   /* Form */
@@ -176,4 +181,71 @@
     height: 20px;
     top: 8px;
   }
+}
+.set-Add{
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  justify-content: start;
+}
+.set-Add .upper{
+  display: flex;
+  flex-direction: column;
+
+}
+.set-Add .upper .title{
+  font-size: 30px;
+  font-weight: 550;
+}
+.set-Add .middle {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.set-Add .middle div{
+  display: flex;
+  gap: 5px;
+  flex-direction: column;
+
+}
+.set-Add .middle input{
+  border: none;
+  border-bottom: 1px solid black;
+  font-size: 19px;
+  padding: 5px;
+}
+.set-Add .middle div label{
+  font-size: 20px;
+  color: #656565;
+
+}
+.set-Add .middle input:focus{
+  outline: none;
+}
+.set-Add .lower{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.set-Add .lower p{
+  font-size: 17px;
+}
+.set-Add .lower div{
+  display: flex;
+  gap: 20px;
+
+}
+.set-Add .lower div button{
+  padding: 3px 10px;
+  cursor: pointer;
+  background-color: white;
+  border: 1px solid black;
+  font-size: 19px;
+  border-radius: 4px;
+  transition: all 0.4s ease;
+
+}
+.set-Add .lower div button:hover{
+  color: #00c2ff;
+  background-color: black;
 }

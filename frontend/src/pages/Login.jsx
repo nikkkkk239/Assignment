@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { useAuthStore } from "../store/AuthStore";
+import { Link, Navigate } from "react-router-dom";
 
 
 const Login = () => {
@@ -41,9 +42,6 @@ const Login = () => {
     <div className="signup-container">
       <form className="signup-form" onSubmit={handleSubmit}>
         <h2>Login</h2>
-
-        
-
         <div className="form-group">
           <label htmlFor="email">Email</label>
           <input
@@ -56,9 +54,6 @@ const Login = () => {
             
           />
         </div>
-
-        
-
         <div className="form-group">
           <label htmlFor="password">Password</label>
           <input
@@ -76,6 +71,7 @@ const Login = () => {
           {isLoggingIn ? "..." : "Login"}
         </button>
       </form>
+      <p className="written">Already have an account ? <Link style={{fontWeight:500,textDecoration:"none",borderBottom:"1px solid black",color:"black"}} to="/signup">Signup</Link></p>
     </div>
   );
 };

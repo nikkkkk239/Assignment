@@ -5,13 +5,15 @@ import { RxCross2 } from "react-icons/rx";
 import { RiUserLocationFill } from "react-icons/ri";
 import { useAuthStore } from "../store/AuthStore";
 import { libraries } from "../lib/constants";
+import { useNavigate } from "react-router-dom";
 
 function SelectAddress() {
+  const navigate = useNavigate()
   const [loc, setLoc] = useState(
-    JSON.parse(localStorage.getItem("currentLocation")) || { latitude: 0, longitude: 0 }
+    JSON.parse(sessionStorage.getItem("currentLocation")) || {latitude:0,longitude:0}
   );
-  const {setPermissionGiven,isPermissionGiven,setAdressSelected,currentLocation,setCurrentLocation} = useAuthStore();
-  const [address, setAddress] = useState(localStorage.getItem("currentAddress") || "");
+  const {setPermissionGiven,isPermissionGiven,setAddressSelected,currentLocation,setCurrentLocation} = useAuthStore();
+  const [address, setAddress] = useState(sessionStorage.getItem("currentAddress") || "");
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: "AIzaSyDyvTvU89e-PTuzB24DpgbEks_AEjlH5Os",
     libraries,
@@ -26,7 +28,7 @@ function SelectAddress() {
         if (status === "OK" && results[0]) {
           const formattedAddress = results[0].formatted_address;
           setAddress(formattedAddress);
-          localStorage.setItem("currentAddress", formattedAddress); // Save address to localStorage
+          sessionStorage.setItem("currentAddress", formattedAddress); // Save address to localStorage
         } else {
           setAddress("Address not found");
         }
@@ -41,15 +43,26 @@ function SelectAddress() {
     const lng = event.latLng.lng();
     const location = { latitude: lat, longitude: lng };
     setLoc(location);
-    localStorage.setItem("currentLocation", JSON.stringify(location)); // Save location to localStorage
+    sessionStorage.setItem("currentLocation", JSON.stringify(location)); // Save location to localStorage
     geocodeLatLng(lat, lng);
   };
 
   useEffect(() => {
-    if (loc.latitude && loc.longitude) {
+    if (loc?.latitude && loc?.longitude) {
       geocodeLatLng(loc.latitude, loc.longitude);
     }
   }, [loc]);
+  useEffect(() => {
+    if (isPermissionGiven) {
+      const storedLocation = JSON.parse(sessionStorage.getItem("currentLocation"));
+      console.log(loc)
+      if (storedLocation) {
+        setLoc(storedLocation);
+        geocodeLatLng(storedLocation.latitude, storedLocation.longitude);
+        
+      }
+    }
+  }, []);
 
   const yourLocation = async () => {
     if ("geolocation" in navigator) {
@@ -59,7 +72,7 @@ function SelectAddress() {
           const location = { latitude, longitude };
 
           // Save location in localStorage for persistence
-          localStorage.setItem("currentLocation", JSON.stringify(location));
+          sessionStorage.setItem("currentLocation", JSON.stringify(location));
           setCurrentLocation(location)
           setLoc(location)
         },
@@ -69,9 +82,14 @@ function SelectAddress() {
         }
       );
     } else {
+     
       toast.error("Geolocation is not supported by your browser.");
     }
   };
+  const handleUseAddress=()=>{
+    setAddressSelected(address)
+    navigate('/')
+  } 
 
   if (!isLoaded) {
     return <p>Loading......</p>;
@@ -94,11 +112,11 @@ function SelectAddress() {
 
       <GoogleMap
         mapContainerStyle={{ width: "100%", height: "75vh" }}
-        center={{ lat: loc.latitude, lng: loc.longitude }}
+        center={{ lat: loc?.latitude, lng: loc?.longitude }}
         zoom={15}
         onClick={handleMapClick}
       >
-        <MarkerF position={{ lat: loc.latitude, lng: loc.longitude }} />
+        <MarkerF position={{ lat: loc?.latitude, lng: loc?.longitude }} />
       </GoogleMap>
 
       <div className="bottom">
@@ -110,7 +128,7 @@ function SelectAddress() {
         </div>
 
         <div className="right">
-          <button>Use Address</button>
+          <button onClick={handleUseAddress}>Use Address</button>
         </div>
 
         <button className="locateMe" onClick={yourLocation}>

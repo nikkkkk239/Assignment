@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { useAuthStore } from "../store/AuthStore";
+import { Link } from "react-router-dom";
 
 
 const Signup = () => {
@@ -111,6 +112,7 @@ const Signup = () => {
           {isSigningUp ? "..." : "Signup"}
         </button>
       </form>
+      <p className="written">Already have an account ? <Link style={{fontWeight:500,textDecoration:"none",borderBottom:"1px solid black",color:"black"}} to="/login">Login</Link></p>
     </div>
   );
 };

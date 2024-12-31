@@ -1,6 +1,7 @@
 import User from "../models/auth.model.js";
 import bcrypt from "bcrypt"
 import { generateToken } from "../lib/generateToken.js";
+import Address from "../models/address.model.js";
 
 
 export const signUp =async (req,res)=>{
@@ -33,6 +34,9 @@ export const signUp =async (req,res)=>{
             mobileNumber,
             email,
             password:hashedPassword
+        })
+        const address = await Address.create({
+            userId:user._id,
         })
         generateToken(user._id,res);
         return res.status(201).json(user);
