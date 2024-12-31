@@ -12,9 +12,9 @@ A brief description of the project, its functionality, and purpose.
 ### Steps
 1. Download the zip file.
 2. Extract the zip file to any directory.
-3.Navigate to the backend folder:.
-4.cd backend.
-5.Install dependencies for the backend:.
+3. Navigate to the backend folder:.
+4. cd backend.
+5. Install dependencies for the backend:.
 6.npm install.
 7.Start the backend:.
 8.npm run start.
