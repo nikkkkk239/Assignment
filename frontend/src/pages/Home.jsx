@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react'
+import React, { useState,useEffect ,useContext} from 'react'
 import { RiUserLocationFill } from "react-icons/ri";
 import Modal from "react-modal"
 import { useLoadScript, Autocomplete } from "@react-google-maps/api";
@@ -10,17 +10,31 @@ import { MdWork } from "react-icons/md";
 import { IoMdPeople } from "react-icons/io";
 import { libraries } from '../lib/constants';
 import { MdLocationPin } from "react-icons/md";
+import { modalContext } from '../store/ModalContext';
 import { useAddressStore } from '../store/AddressStore';
 import Navbar from '../components/Navbar';
 function Home() {
   const navigate = useNavigate()
   const [isModalOpen,setIsModalOpen] = useState(false)
+  const {homeModalOpen,setHomeModalOpen} = useContext(modalContext)
   const {getAddress,address,setHome,setOffice,setFamily} = useAddressStore();
-  const {setPermissionGiven,isPermissionGiven,currentLocation,addressSelected,setCurrentLocation} = useAuthStore();
+  const {setPermissionGiven,isPermissionGiven,currentLocation,addressSelected,setAddressSelected,setCurrentLocation} = useAuthStore();
+  const [autocomplete, setAutocomplete] = useState(null);
+  
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [house,setHouse] = useState("")
   const [road,setRoad] = useState("") 
-  const [autocomplete, setAutocomplete] = useState(null);
+
+
+  useEffect(() => {
+
+    const isModalShown = localStorage.getItem('isModalShown');
+    if (!isModalShown) {
+      setIsModalOpen(true); 
+      localStorage.setItem('isModalShown', 'true'); 
+    }
+  }, []);
+
   const formatAddress = (address) => {
     const parts = address?.split(",");
     const boldPart = parts?.slice(0, 2)?.join(","); // Join parts before the 2nd comma
@@ -117,7 +131,10 @@ function Home() {
       return;
     }
     setHome({home : addressSelected+","+house+","+road})
+    setHomeModalOpen(false)
+    localStorage.setItem("homeModal",JSON.stringify(false))
     navigate('/yourlocation')
+    
   }
 
   const handleWorkClick = ()=>{
@@ -131,9 +148,17 @@ function Home() {
       return;
     }
     setOffice({office : addressSelected+","+house+","+road})
+    setHomeModalOpen(false)
+    localStorage.setItem("homeModal",JSON.stringify(false))
+
+
     navigate('/yourlocation')
 
   }
+  useEffect(()=>{
+    const local = localStorage.getItem("homeModal")
+    setHomeModalOpen( local? JSON.parse(local) : true )
+  },[])
 
   const handlePeopleClick = ()=>{
     console.log("hi")
@@ -146,6 +171,10 @@ function Home() {
       return;
     }
     setFamily({family : addressSelected+","+house+","+road})
+    setHomeModalOpen(false)
+    localStorage.setItem("homeModal",JSON.stringify(false))
+
+
     navigate('/yourlocation')
   }
 
@@ -192,11 +221,11 @@ function Home() {
             )}
           </div> : <button style={{...buttonStyle,marginLeft:"10px"}} onClick={()=>navigate('/yourlocation')}>Your locations</button>}
         </div>
-      </Modal> :
+      </Modal> : homeModalOpen ?
         <Modal
         ariaHideApp={false}
-        isOpen={isModalOpen}
-        onRequestClose={() => setIsModalOpen(false)}
+        isOpen={homeModalOpen}
+        onRequestClose={() => setHomeModalOpen(false)}
         style={{
           overlay: { backgroundColor: "rgba(0, 0, 0, 0.75)" },
           content: {
@@ -237,6 +266,7 @@ function Home() {
             </div>
           </div>
         </Modal>
+        :<div></div>
       }
 
     </div>

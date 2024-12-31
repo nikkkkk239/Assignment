@@ -1,4 +1,4 @@
-import React,{useEffect, useState} from 'react'
+import React,{useEffect, useState,useContext} from 'react'
 import { useAddressStore } from '../store/AddressStore'
 import { RiCrosshair2Fill } from "react-icons/ri";
 import { FaHouse } from "react-icons/fa6";
@@ -14,12 +14,13 @@ import { libraries } from '../lib/constants';
 import { FaHeart } from "react-icons/fa";
 import { useLoadScript ,GoogleMap,MarkerF,Autocomplete} from '@react-google-maps/api';
 import toast from 'react-hot-toast';
-
+import { modalContext } from '../store/ModalContext';
 
 function YourLocation() {
-
+  
   const {address,setHome,addInRecentSearch,setOffice,setFamily,setFavour,removeFromRecent} = useAddressStore()  
-
+  const {homeModalOpen,setHomeModalOpen} = useContext(modalContext)
+  
   const [showMap,setShowMap] = useState(false)
   const [isModalOpen,setIsModalOpen] = useState(false)
   const [deliveryAddress, setDeliveryAddress] = useState("");

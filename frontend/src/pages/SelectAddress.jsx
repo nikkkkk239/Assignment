@@ -87,6 +87,7 @@ function SelectAddress() {
     }
   };
   const handleUseAddress=()=>{
+    localStorage.setItem("homeModal", JSON.stringify(true))
     setAddressSelected(address)
     navigate('/')
   } 
