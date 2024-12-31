@@ -1,38 +1,38 @@
-Location / Address Flow
+###Location / Address Flow
 
 A brief description of the project, its functionality, and purpose.
 
 How to Run the Code
 
-Prerequisites
-Node.js (version)
-MongoDB (if used)
-Google API key for Google Maps integration
+# Prerequisites
+# Node.js (version)
+# MongoDB (if used)
+# Google API key for Google Maps integration
 
 Steps
-Download the zip file.
-Extract the zip file to any directory.
-Navigate to the backend folder:
-cd backend
-Install dependencies for the backend:
-npm install
-Start the backend:
-npm run start
-Navigate to the frontend folder:
-cd ../frontend
-Install dependencies for the frontend:
-npm install
-Start the frontend:
-npm run dev
-Follow the link displayed in the terminal to access the application.
-Packages Used in the Project
+1)Download the zip file.
+2)Extract the zip file to any directory.
+3)Navigate to the backend folder:
+4)cd backend
+5)Install dependencies for the backend:
+6)npm install
+7)Start the backend:
+8)npm run start
+9)Navigate to the frontend folder:
+10)cd ../frontend
+11)Install dependencies for the frontend:
+12)npm install
+13)Start the frontend:
+14)npm run dev
+15)Follow the link displayed in the terminal to access the application.
+16)Packages Used in the Project
 
-Backend
-bcrypt: For password hashing.
-jsonwebtoken: For user authentication (JWT tokens).
-dotenv: To manage environment variables.
-cors: For enabling Cross-Origin Resource Sharing.
-express: The web framework for building the backend API.
+##Backend
+1)bcrypt: For password hashing.
+2)jsonwebtoken: For user authentication (JWT tokens).
+3)dotenv: To manage environment variables.
+4)cors: For enabling Cross-Origin Resource Sharing.
+5)express: The web framework for building the backend API.
 mongoose: For MongoDB object modeling.
 cookie-parser: For parsing cookies.
 Frontend
