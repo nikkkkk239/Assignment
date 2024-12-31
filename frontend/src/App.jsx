@@ -26,7 +26,7 @@ function App() {
         <Route path='/' element={authUser ? <Home/> :<Navigate to="/login"/>}/>
         <Route path='/selectAddress' element={authUser ? <SelectAddress/> :<Navigate to="/login"/>}/>
         <Route path='/yourlocation' element={authUser ?<YourLocation/> :<Navigate to="/login"/>}/>
-        <Route paht="*" element={<NoPageFound/>}/>
+        <Route path="*" element={<NoPageFound/>}/>
 
 
       </Routes>

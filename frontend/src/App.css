@@ -280,6 +280,7 @@
   display: flex;
   flex-direction: column;
   border: 1px solid black;
+  border-radius: 6px ;
   width: 50%;
   height: fit-content;
   align-items: center;
@@ -452,5 +453,85 @@
   color: #4facfe;
 }
 .logout{
+  position: absolute;
+  top: 13px;
+  right: 15px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.navbar{
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 25px;
+  align-items: center;
+
+  background-color: #00c2ff;
+}
+.navbar .logo{
+  font-size: 30px;
+
+}
+.navbar .buttons{
+  display: flex;
+  gap: 20px;
+}
+.navbar .buttons .written .name{
+  font-weight: 500;
+  font-size: 20px;
+
+}
+.navbar .buttons .written .favourAdd{
+  font-size: 15px;
+}
+.navbar .buttons .logoutBtn{
+  padding: 0 10px;
+  border: 1px solid black;
+  border-radius: 4px;
+  font-size: 20px;
+  cursor: pointer;
+  background-color: white;
+  font-weight: 500;
+}
+.recent{
+  padding: 5px;
+  transition: all 0.4s ease;
+  border-radius: 5px;
+}
+.recent:hover{
+  transform: scale(1.03);
+  background-color: #bebdbd;
   
+}
+.card{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+
+
+}
+.card p{
+  font-size: 16px;
+}
+.box{
+  display: flex;
+  background-color: #00c2ff;
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.box .written{
+  background-color: white;
+  border: 2px solid black;
+  padding: 15px;
+  text-align: center;
+
+}
+.box .written .title{
+  font-size: 30px;
+
 }

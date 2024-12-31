@@ -18,7 +18,8 @@ import toast from 'react-hot-toast';
 
 function YourLocation() {
 
-  const {address,setHome,addInRecentSearch,setOffice,setFamily,setFavour} = useAddressStore()  
+  const {address,setHome,addInRecentSearch,setOffice,setFamily,setFavour,removeFromRecent} = useAddressStore()  
+
   const [showMap,setShowMap] = useState(false)
   const [isModalOpen,setIsModalOpen] = useState(false)
   const [deliveryAddress, setDeliveryAddress] = useState("");
@@ -28,7 +29,7 @@ function YourLocation() {
     googleMapsApiKey: "AIzaSyDyvTvU89e-PTuzB24DpgbEks_AEjlH5Os",
     libraries,
   });
-  const {isPermissionGiven,setPermissionGiven,addressSelected,setAddressSelected,setCurrentLocation,currentLocation} = useAuthStore()
+  const {isPermissionGiven,setPermissionGiven,addressSelected,setAddressSelected,setCurrentLocation,currentLocation,logout} = useAuthStore()
   const formatAddress = (address)=>{
     const parts = address?.split(",");
     const required = parts?.slice(0, 2)?.join(",");
@@ -94,7 +95,6 @@ function YourLocation() {
           setDeliveryAddress(formattedAddress); // Update the input box with new address
           setAdd(formattedAddress);
           sessionStorage.setItem("currentAddress", formattedAddress);
-          addInRecentSearch({address:formatAddress});
           
           // Save address to sessionStorage
         } else {
@@ -105,20 +105,43 @@ function YourLocation() {
       console.error("Google Maps API is not loaded.");
     }
   };
+  const returnAdd = (lat, lng) => {
+    return new Promise((resolve, reject) => {
+      if (window.google) {
+        const geocoder = new window.google.maps.Geocoder();
+        const latLng = { lat: parseFloat(lat), lng: parseFloat(lng) };
+  
+        geocoder.geocode({ location: latLng }, (results, status) => {
+          if (status === "OK" && results[0]) {
+            const formattedAddress = results[0].formatted_address;
+            resolve(formattedAddress); // Resolve with the address
+          } else {
+            console.error("Geocoding failed: ", status);
+            reject("Address not found");
+          }
+        });
+      } else {
+        reject("Google Maps API is not loaded.");
+      }
+    });
+  };
+  
 
   const yourLocation = async () => {
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
+        async(position) => {
           const { latitude, longitude } = position.coords;
           const location = { latitude, longitude };
 
           // Save location in localStorage for persistence
           sessionStorage.setItem("currentLocation", JSON.stringify(location));
           setCurrentLocation(location)
-          
           setShowMap(true)
+          const address = await returnAdd(location.latitude,location.longitude)
+          addInRecentSearch({address})
           geocodeLatLng(location.latitude,location.longitude)
+          
         },
         (error) => {
           console.error("Error retrieving location:", error);
@@ -128,10 +151,11 @@ function YourLocation() {
     } else {
       toast.error("Geolocation is not supported by your browser.");
     }
+    
   };
 
 
-  const handleMapClick = (event) => {
+  const handleMapClick = async(event) => {
     const lat = event.latLng.lat();
     const lng = event.latLng.lng();
     const location = { latitude: lat, longitude: lng };
@@ -140,6 +164,8 @@ function YourLocation() {
     sessionStorage.setItem("currentLocation", JSON.stringify(location)); // Save location to sessionStorage
   
     geocodeLatLng(lat, lng); // Update address based on lat/lng
+    const address = await returnAdd(location.latitude,location.longitude)
+    addInRecentSearch({address})
   };
   const handleAddClick = ()=>{
     if(deliveryAddress == "") {
@@ -149,6 +175,26 @@ function YourLocation() {
     setIsModalOpen(true)
 
   }
+  const getLatLngFromAddress = (address) => {
+    return new Promise((resolve, reject) => {
+      if (window.google) {
+        const geocoder = new window.google.maps.Geocoder();
+  
+        geocoder.geocode({ address }, (results, status) => {
+          if (status === "OK" && results[0]) {
+            const { lat, lng } = results[0].geometry.location;
+            resolve({ latitude: lat(), longitude: lng() });
+          } else {
+            console.error("Geocoding failed: ", status);
+            reject("Unable to find location for the given address.");
+          }
+        });
+      } else {
+        reject("Google Maps API is not loaded.");
+      }
+    });
+  };
+  
   const homeClicked = ()=>{
     setHome({home:deliveryAddress})
     setIsModalOpen(false)
@@ -166,11 +212,27 @@ function YourLocation() {
   const favourClicked = (address)=>{
     setFavour({favorite:address})
   }
+  const handleLogout = ()=>{
+    setAddressSelected(null)
+    setPermissionGiven(false)
+    sessionStorage.clear();
+    localStorage.clear();
+    localStorage.removeItem("auth-storage")
+    logout();
+  }
+  const handleClick = async(add)=>{
+    const obj = await getLatLngFromAddress(add);
+    setShowMap(true)
+    setCurrentLocation(obj);
+    setDeliveryAddress(add);
+    await removeFromRecent({address:add})
+    await addInRecentSearch({address:add})
+  }
 
   return (
 
     <div className='yourlocation'>
-      <div className='logout'><MdLogout/></div>
+      <div className='logout' onClick={handleLogout}><MdLogout/></div>
       <Modal
         ariaHideApp={false}
         isOpen={isModalOpen}
@@ -189,13 +251,24 @@ function YourLocation() {
       >
         <h1 style={{fontSize:"25px",fontWeight:"600",marginBottom:"20px"}}>Save As</h1>
         <div style={{display:"flex",alignContent:"center",justifyContent:"center",gap:"40px"}}>
-          <button style={{width:"40px",height:"40px",color:"#00c2ff",backgroundColor:"#00c2ff",fontSize:"20px",cursor:"pointer",borderRadius:"50%",border:"1px solid black",backgroundColor:"white"}}
-            onClick={homeClicked}
-          >
-            <FaHouse/>
-          </button>
-          <button style={{width:"40px",height:"40px",color:"#00c2ff",backgroundColor:"#00c2ff",fontSize:"20px",cursor:"pointer",borderRadius:"50%",border:"1px solid black",backgroundColor:"white"}} onClick={officeClicked}><MdWork/></button>
-          <button style={{width:"40px",height:"40px",color:"#00c2ff",backgroundColor:"#00c2ff",fontSize:"20px",cursor:"pointer",borderRadius:"50%",border:"1px solid black",backgroundColor:"white"}} onClick={familyClicked}><IoMdPeople/></button>
+          <div className='card'>
+            <button style={{width:"50px",height:"50px",color:"#00c2ff",backgroundColor:"#00c2ff",fontSize:"20px",cursor:"pointer",borderRadius:"50%",border:"1px solid black",backgroundColor:"white"}}
+              onClick={homeClicked}
+            >
+              <FaHouse/>
+            </button>
+            <p>Home</p>
+          </div>
+
+          <div className='card'>
+          <button style={{width:"50px",height:"50px",color:"#00c2ff",backgroundColor:"#00c2ff",fontSize:"20px",cursor:"pointer",borderRadius:"50%",border:"1px solid black",backgroundColor:"white"}} onClick={officeClicked}><MdWork/></button>
+            <p>Work</p>
+          </div>
+
+          <div className='card'>
+          <button style={{width:"50px",height:"50px",color:"#00c2ff",backgroundColor:"#00c2ff",fontSize:"20px",cursor:"pointer",borderRadius:"50%",border:"1px solid black",backgroundColor:"white"}} onClick={familyClicked}><IoMdPeople/></button>
+            <p>Family</p>
+          </div>
         </div>
         <button style={{position:"absolute",top:"20px",right:"20px",width:"30px",height:"30px",fontSize:"17px",cursor:"pointer",borderRadius:"50%",border:"1px solid black",backgroundColor:"white",display:"flex",alignItems:"center",justifyContent:"center",}} onClick={()=>setIsModalOpen(false)}><RxCross2/></button>
       </Modal>
@@ -281,8 +354,8 @@ function YourLocation() {
             Recent Searches
           </div>
           <div className='locations'>
-            {address.recentSearches.length != 0 && address.recentSearches.map((add)=>{
-              return <div>
+            {address.recentSearches.length != 0 && address.recentSearches.map((add,i)=>{
+              return <div className='recent' key={i} onClick={()=>handleClick(add)} style={{cursor:"pointer"}}>
                 <div className='icon'><MdLocationPin/></div>
                 <div style={{display:'flex',flexDirection:"column",gap:"2px"}}> 
                 <h3>{formatAddressIn2(add).boldPart}</h3>

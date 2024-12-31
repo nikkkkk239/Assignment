@@ -11,9 +11,10 @@ import { IoMdPeople } from "react-icons/io";
 import { libraries } from '../lib/constants';
 import { MdLocationPin } from "react-icons/md";
 import { useAddressStore } from '../store/AddressStore';
+import Navbar from '../components/Navbar';
 function Home() {
   const navigate = useNavigate()
-  const [isModalOpen,setIsModalOpen] = useState(true)
+  const [isModalOpen,setIsModalOpen] = useState(false)
   const {getAddress,address,setHome,setOffice,setFamily} = useAddressStore();
   const {setPermissionGiven,isPermissionGiven,currentLocation,addressSelected,setCurrentLocation} = useAuthStore();
   const [deliveryAddress, setDeliveryAddress] = useState("");
@@ -54,7 +55,9 @@ function Home() {
   useEffect(() => {
     !isPermissionGiven && checkLocationPermission();
     getAddress();
-    
+    // if(address.home.length != 0 && address.office.length != 0 && address.family.length != 0  && isPermissionGiven && !addressSelected){
+    //   navigate('/yourlocation');
+    // }
   }, []);
 
 
@@ -148,6 +151,7 @@ function Home() {
 
   return (
     <div>
+      <Navbar/>
       {!addressSelected ? <Modal
         ariaHideApp={false}
         isOpen={isModalOpen}
@@ -168,12 +172,12 @@ function Home() {
         <h2>Location Permission Required</h2>
         <p>Please enable your location to proceed or search manually for your address.</p>
 
-        <div style={{ marginTop: "20px" }}>
-          {!isPermissionGiven && <button onClick={enableLocation} className="btn" style={buttonStyle}>
+        <div style={{ marginTop: "20px"  }}>
+          {!isPermissionGiven && <button onClick={enableLocation} className="btn" style={{...buttonStyle,marginBottom:"10px"}}>
             Enable Location
           </button>}
 
-          {(address?.home?.length==0 || address?.office?.length==0||address?.family?.length==0 ) && <div style={{ marginTop: "10px" }}>
+          {(address?.home?.length==0 || address?.office?.length==0||address?.family?.length==0 ) ? <div style={{ marginTop: "10px" }}>
             {isLoaded && (
               <Autocomplete
                 onLoad={(autoCompleteInstance) => setAutocomplete(autoCompleteInstance)}
@@ -186,7 +190,7 @@ function Home() {
                 />
               </Autocomplete>
             )}
-          </div>}
+          </div> : <button style={{...buttonStyle,marginLeft:"10px"}} onClick={()=>navigate('/yourlocation')}>Your locations</button>}
         </div>
       </Modal> :
         <Modal
@@ -234,6 +238,7 @@ function Home() {
           </div>
         </Modal>
       }
+
     </div>
 
   )

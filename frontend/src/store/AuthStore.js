@@ -56,6 +56,18 @@ export const useAuthStore = create(
         }finally{
             set({isLoggingIn : false})
         }
+    },
+    logout:async()=>{
+        try {
+            const response = await axiosInstance.post("/auth/logout");
+            toast.success("Logged In successful.")
+            set({authUser : null});
+            const storage = get()._persist?.storage || localStorage;
+            storage.removeItem("auth-storage");
+        } catch (error) {
+            console.log("Error in login : ",error);
+            toast.error(error.response.data.message)
+        }
     }
 }),{
     name:"auth-storage",

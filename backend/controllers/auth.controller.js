@@ -79,3 +79,14 @@ export const checkAuth = async(req,res)=>{
         return res.status(500).json("Internal server error.")
     }
 }
+export const logout = async(req,res)=>{
+    try {
+        res.cookie("token","",{
+            maxAge:0,
+        })
+        return res.status(200).json({message:"Logged out Successfully."})
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json("Internal server error.")
+    }
+}
