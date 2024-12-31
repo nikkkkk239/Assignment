@@ -54,7 +54,10 @@ function Home() {
   useEffect(() => {
     !isPermissionGiven && checkLocationPermission();
     getAddress();
+    
   }, []);
+
+
 
   const handlePlaceSelected = () => {
     if (autocomplete !== null) {

@@ -249,3 +249,208 @@
   color: #00c2ff;
   background-color: black;
 }
+
+.yourlocation{
+  display: flex;
+  
+  flex-direction: column;
+}
+.yourlocation h1{
+  background-color: #00c2ff;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 500;
+  padding: 10px;
+}
+.yourlocation .below{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: fit-content;
+  min-height: calc(100vh - 45.3px);
+  gap: 50px;
+  padding-top:25px;
+  padding-left: 30px;
+  padding-right: 30px;
+
+}
+.container{
+  display: flex;
+  flex-direction: column;
+  border: 1px solid black;
+  width: 50%;
+  height: fit-content;
+  align-items: center;
+  padding: 20px ;
+
+}
+@media (max-width:978px) {
+  .container{
+    width: 80%;
+  
+  }
+  
+}
+@media (max-width:554px) {
+  .container{
+    width: 90%;
+  
+  }
+  
+}
+@media (max-width:500px) {
+  .container{
+    width: 95%;
+  
+  }
+  
+}
+.yourlocation .below .upper{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #333;
+}
+.yourlocation .below .upper .text{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: space-between;
+  width: 100%;
+}
+.yourlocation .below .upper .text input{
+  padding: 5px 15px;
+  border: 1px solid black;
+  font-size: 17px;
+  width: 77%;
+  border-radius: 5px;
+}
+.yourlocation .below .upper .text input:focus{
+  outline: none;
+}
+.yourlocation .below .upper .text button{
+  padding: 5px;
+  white-space: nowrap;
+  background-color: #00c2ff;
+  border: 2px solid black;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+
+}
+.yourlocation .below .upper .liability{
+  display: flex;
+  width: 100%;
+  min-height:30px ;
+  justify-content: space-between;
+
+}
+.yourlocation .below .upper .liability p{
+  color: #4facfe;
+  font-size: 16.5px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+.yourlocation .below .upper .liability p:hover{
+  border-bottom: 1px solid #4facfe;
+}
+.yourlocation .below .upper .liability button{
+  padding: 5px;
+  cursor: pointer;
+  border: 2px solid #4facfe;
+  background-color: white;
+  border-radius: 3px;
+  font-size: 16px;
+  font-weight: 400;
+
+}
+.yourlocation .below .upper .liability button:hover{
+  border: 2px solid black;
+  color: #4facfe;
+}
+
+.yourlocation .below .middle{
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 20px;
+  border-bottom: 1px solid #333;
+
+  padding: 15px 0px ;
+}
+.yourlocation .below .middle .title{
+  font-size: 18px;
+  font-weight: 500;
+
+}
+.yourlocation .below .middle .locations{
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.yourlocation .below .middle .locations h3{
+  font-size: 17.5px;
+  font-weight: 650;
+}
+.yourlocation .below .middle .locations p{
+  color: #6f6f6f;
+}
+.yourlocation .below .middle .locations div{
+  display: flex;
+  justify-content: start;
+  gap: 10px;
+}
+.yourlocation .below .middle .locations div .icon{
+  font-size: 25px;
+  color: #4facfe;
+}
+
+
+
+
+
+
+.yourlocation .below .lower{
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 20px;
+
+  padding: 15px 0px ;
+}
+.yourlocation .below .lower .title{
+  font-size: 18px;
+  font-weight: 500;
+
+}
+.yourlocation .below .lower .locations{
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.yourlocation .below .lower .locations h3{
+  font-size: 17.5px;
+  font-weight: 650;
+}
+.yourlocation .below .lower .locations p{
+  color: #6f6f6f;
+}
+.yourlocation .below .lower .locations div{
+  display: flex;
+  justify-content: start;
+  gap: 10px;
+}
+.yourlocation .below .lower .locations div .icon{
+  font-size: 25px;
+  color: #4facfe;
+}
+.logout{
+  
+}

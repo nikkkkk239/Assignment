@@ -92,3 +92,30 @@ export const addFavour = async(req,res)=>{
         return res.status(500).json({message:"Internal server error ."})
     }
 }
+export const addRecent = async(req,res)=>{
+    try {
+        const {address} = req.body;
+        const userId = req.user._id;
+
+        const isAddress = await Address.findOne({userId});
+        if(!isAddress){
+            return res.status(404).json({message:"No details found."})
+        }
+        const updatedAddress = await Address.findOneAndUpdate(
+            { userId },
+            {
+                $push: {
+                    recentSearches: {
+                        $each: [address],
+                        $slice: -3, 
+                    },
+                },
+            },
+            { new: true }
+        );
+        return res.status(200).json({address:updatedAddress})
+    } catch (error) {
+        console.log("Error in addFavour :",error);
+        return res.status(500).json({message:"Internal server error ."})
+    }
+}

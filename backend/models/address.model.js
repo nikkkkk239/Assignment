@@ -22,7 +22,18 @@ const addressSchema = new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:"users",
         required:true
-    }
+    },
+    recentSearches :[
+        {type:String}
+    ]
 },{timestamps:true})
+
+addressSchema.pre("save", function (next) {
+  if (this.recentSearches.length > 3) {
+    this.recentSearches = this.recentSearches.slice(-3); // Keep only the last 3 items
+  }
+  next();
+});
+
 const Address = mongoose.model("address",addressSchema);
 export default Address
